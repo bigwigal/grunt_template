@@ -1,0 +1,22 @@
+var testLinks = {
+	"sardegna": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579771",
+	"sicilia": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579769",
+	"calabria": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579768",
+	"basilicata": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579767",
+	"puglia": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579766",
+	"campania": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579765",
+	"molise": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579764",
+	"abruzzo": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579763",
+	"lazio": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579762",
+	"marche": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579761",
+	"umbria": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579760",
+	"toscana": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579759",
+	"emilia": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579758",
+	"liguria": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579756",
+	"friuli": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579755",
+	"veneto": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579752",
+	"trentino": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579751",
+	"lombardia": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579750",
+	"piemonte": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579748",
+	"aosta": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579747"
+}

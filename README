@@ -1,0 +1,1 @@
+GruntJS template to set up a Grunt project. 'grunt-init <template name>' will run the template in the current directory provided that the root directory of the template is located in your '.grunt-init' directory, it can also be loaded by replacing template name with the path to the template. Full details are here http://gruntjs.com/project-scaffolding#custom-templates.

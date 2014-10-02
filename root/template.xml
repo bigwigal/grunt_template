@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Item id="" TextType="CompleteItem" SchemaVersion="2.0" PageStartNumber="1"
+    Template="Generic_Supp" Module="default" DiscussionAlias="Discussion" SessionAlias=""
+    SecondColour="None" ThirdColour="None" FourthColour="None" Logo="colour"
+    Rendering="VLE2 staff (learn3)">
+    <CourseCode>AP-WS</CourseCode>
+    <CourseTitle/>
+    <ItemID/>
+    <ItemTitle>##title</ItemTitle>
+    <Unit>
+        <UnitID/>
+        <UnitTitle/>
+        <ByLine/>
+        <Session>
+            <Title/>
+            <MediaContent width="" height="" src=""  webthumbnail=""/>
+        </Session>
+    </Unit>
+</Item>
