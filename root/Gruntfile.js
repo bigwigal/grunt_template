@@ -54,7 +54,7 @@ module.exports = function (grunt) {
                     'release/<%= compress.main.options.archive %>.jpg'],
                 dest: '<%= pkg.vle_path %>',
                 filter: 'isFile'
-            },
+            }
         },
         csslint: {
             options: {
@@ -73,6 +73,7 @@ module.exports = function (grunt) {
             }
         },
         jshint: {
+            build: ['Gruntfile.js', 'src/js/**/*.js'],
             options: {
                 // options here to override JSHint defaults
                 globals: {
@@ -81,8 +82,7 @@ module.exports = function (grunt) {
                     module: true,
                     document: true
                 }
-            },
-            files: ['Gruntfile.js', 'src/js/**/*.js']
+            }
         },
         open: {
             dev: {
@@ -113,12 +113,12 @@ module.exports = function (grunt) {
         },
         replace: {
             xml: {
-                src: '../<%= pkg.name %>.xml',
+                src: '<%= pkg.name %>.xml',
                 dest: '<%= pkg.name %>.xml',
                 replacements: [
                     {
                         from: '##title',
-                        to: '<%= pkg.name %>'
+                        to: '<%= pkg.course %>' + ' ' + '<%= pkg.title %>'
                     },
                     {
                         from: 'src=""',
@@ -153,13 +153,35 @@ module.exports = function (grunt) {
                 ]
             }
         },
+        shell: {
+            git_init: {
+                options: {
+                    failOnError: false
+                },
+                command: [
+                    'git init',
+                    'git add -A',
+                    'git commit -m \'initial commit\'',
+
+                ].join('&&')
+            },
+            build: {
+                options: {
+                    failOnError: false
+                },
+                command: [
+                    'git add -A',
+                    'git commit -m \'initial commit\''
+                ].join('&&')
+            }
+        },
         uglify: {
             options: {
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
             },
             dist: {
                 files: {
-                    'build/<%= pkg.name %>.min.js': ['<%= concat.js.dest %>']
+                    'build/js/<%= pkg.name %>.min.js': ['<%= concat.js.dest %>']
                 }
             }
         },
@@ -179,13 +201,16 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-git');
     grunt.loadNpmTasks('grunt-open');
     grunt.loadNpmTasks('grunt-processhtml');
+    grunt.loadNpmTasks('grunt-shell');
     grunt.loadNpmTasks('grunt-text-replace');
 
     //Tasks
-    grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
-    grunt.registerTask('build', ['jshint', 'qunit']);
-    grunt.registerTask('release', ['jshint', 'qunit']);
+    grunt.registerTask('default', ['build']);
+    grunt.registerTask('setup', ['replace', 'shell:git_init']);
+    grunt.registerTask('build', ['clean:build', 'jshint', 'csslint', 'concat', 'uglify', 'cssmin', 'copy:build', 'processhtml']);
+    grunt.registerTask('release', ['clean:release', 'build', 'compress', 'copy:release']);
 
 };

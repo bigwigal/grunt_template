@@ -13,7 +13,7 @@ exports.template = function (grunt, init, done) {
         init.prompt('name'),
         init.prompt('title'),
         init.prompt('description'),
-        init.prompt('version', '1.0'),
+        init.prompt('version', '1.0.0'),
         init.prompt('repository'),
         init.prompt('author_name', 'Alex Phillips'),
         init.prompt('author_email', 'alex.phillips@open.ac.uk'),
@@ -64,9 +64,10 @@ exports.template = function (grunt, init, done) {
                 'grunt-contrib-uglify': '^0.5.1',
                 'grunt-contrib-watch': '^0.6.1',
                 'grunt-contrib-cssmin': '^0.10.0',
-                //'grunt-mkdir': '^0.1.2',
+				//'grunt-mkdir': '^0.1.2',
                 'grunt-open': '^0.2.3',
                 'grunt-processhtml': '^0.3.3',
+                'grunt-shell': '^1.1.1',
                 'grunt-text-replace': '^0.3.12'
             };
             pkg.width = props.width;
