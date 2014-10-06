@@ -13,11 +13,11 @@ module.exports = function (grunt) {
         concat: {
             js: {
                 src: ['src/js/**/*.js'],
-                dest: 'build/js/<%= pkg.name %>.js'
+                dest: 'src/js/<%= pkg.name %>.js'
             },
             css: { // Good idea??
                 src: ['src/css/**/*.css'],
-                dest: 'build/css/<%= pkg.name %>.css'
+                dest: 'src/css/<%= pkg.name %>.css'
             }
         },
         compress: {
@@ -60,16 +60,16 @@ module.exports = function (grunt) {
             options: {
                 ids: false
             },
-            src: ['src/css/**/*.css']
+            beforeconcat: ['<%= concat.css.src %>'],
+            afterconcat: ['<%= cssmin.build.dest %>']
         },
         cssmin: {
+            options: {
+                banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+            },
             build: {
-                options: {
-                    banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
-                },
-                files: {
-                    'build/css/style.min.css': ['<%= concat.css.dest %>']
-                }
+                src: ['<%= concat.css.dest %>'],
+                dest: 'build/<%= pkg.name %>.min.css'
             }
         },
         jshint: {
@@ -84,7 +84,7 @@ module.exports = function (grunt) {
             },
             gruntfile: ['Gruntfile.js'],
             beforeconcat: ['<%= concat.js.src %>'],
-            afterconcat: ['<%= concat.js.dest %>']
+            afterconcat: ['<%= uglify.build.dest %>']
         },
         open: {
             dev: {
@@ -109,7 +109,7 @@ module.exports = function (grunt) {
         processhtml: {
             build: {
                 files: {
-                    'build/index.xhtml': 'src/index.xhtml'
+                    'build/index.xhtml': 'build/index.xhtml'
                 }
             }
         },
@@ -151,32 +151,23 @@ module.exports = function (grunt) {
                     {
                         from: '##title',
                         to: '<%= pkg.title %>'
+                    },
+                    {
+                        from: 'app.min.js',
+                        to: '<%= pkg.name %>.min.js'
+                    },
+                    {
+                        from: 'style.min.css',
+                        to: '<%= pkg.name %>.min.css'
                     }
                 ]
             }
         },
         shell: {
-            mk_git_dir: {
-                options: {
-                    execOptions: {
-                        cwd: '//esaki/LTS-Software/git-repos'
-                    }
-                },
-                command: 'mkdir <%= pkg.name %>.git'
-            },
-            git_init: {
-                options: {
-                    failOnError: false
-                },
-                command: 'git init'
-            },
-            git_clone: {
-                command: 'git clone --bare ../<%= pkg.name %> ../<%= pkg.name %>.git'
-            },
             git_commit: {
                 command: [
                     'git add -A',
-                    'git commit -m \'msg\''
+                    'git commit -m "initial commit"'
                 ].join('&&')
             }
         },
@@ -184,20 +175,19 @@ module.exports = function (grunt) {
             options: {
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
             },
-            dist: {
-                files: {
-                    'build/js/app.min.js': ['<%= concat.js.dest %>']
-                }
+            build: {
+                src: ['<%= concat.js.dest %>'],
+                dest: 'build/<%= pkg.name %>.min.js'
             }
         },
         watch: {
             js: {
-                files: ['<%= jshint.files %>'],
-                tasks: ['jshint']
+                files: ['<%= jshint.beforeconcat %>'],
+                tasks: ['jshint:beforeconcat']
             },
             css: {
-                files: ['<%= csslint.src %>'],
-                tasks: ['csslint']
+                files: ['<%= csslint.beforeconcat %>'],
+                tasks: ['csslint:beforeconcat']
             }
         }
     });
@@ -221,7 +211,7 @@ module.exports = function (grunt) {
     //Tasks
     grunt.registerTask('default', ['build']);
     grunt.registerTask('setup', ['replace', 'shell:git_commit']);
-    grunt.registerTask('build', ['clean:build', 'jshint', 'csslint', 'concat', 'uglify', 'cssmin', 'copy:build', 'processhtml']);
+    grunt.registerTask('build', ['clean:build', 'concat', 'uglify', 'cssmin','copy:build', 'processhtml', 'jshint:afterconcat', 'csslint:afterconcat']);
     grunt.registerTask('release', ['clean:release', 'build', 'compress', 'copy:release']);
 
 };

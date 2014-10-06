@@ -66,7 +66,7 @@ exports.template = function (grunt, init, done) {
 				pkg.width = '512';
 			} else {
 				pkg.width = '880'
-			}
+            }
             pkg.height = '820';
             pkg.vle_sc_path = '\\\\esaki\\lts-common$\\alex_phillips\\';
             pkg.vle_path = 'X:/alex_phillips/';
