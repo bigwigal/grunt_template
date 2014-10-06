@@ -4,18 +4,18 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
         clean: {
             build: {
-                src: ["build/"]
+                src: ['build/**/*']
             },
             release: {
-                src: ["release/"]
+                src: ["release/**/*"]
             }
         },
         concat: {
             js: {
-                src: ['src/js/**/*.js', '!vleapi*.js'],
+                src: ['src/js/**/*.js'],
                 dest: 'build/js/<%= pkg.name %>.js'
             },
-            css: {
+            css: { // Good idea??
                 src: ['src/css/**/*.css'],
                 dest: 'build/css/<%= pkg.name %>.css'
             }
@@ -23,15 +23,14 @@ module.exports = function (grunt) {
         compress: {
             main: {
                 options: {
-                    archive: '<%= pkg.name %>.zip',
+                    archive: 'release/<%= pkg.name %>.zip',
                     mode: 'zip'
                 },
                 files: [
                     {
                         expand: true,
                         cwd: 'build/',
-                        src: ['**/*'],
-                        dest: 'release/'
+                        src: ['**/*']
                     }
                 ]
             }
@@ -41,8 +40,9 @@ module.exports = function (grunt) {
                 expand: true,
                 cwd: 'src/',
                 src: [
-                    '*/',
-                    'img/**'
+                    '**/*',
+                    '!css/**/*',
+                    '!js/**/*'
                 ],
                 dest: 'build/',
                 filter: 'isFile'
@@ -50,8 +50,8 @@ module.exports = function (grunt) {
             release: {
                 expand: true,
                 flatten: true,
-                src: ['release/<%= compress.main.options.archive %>',
-                    'release/<%= compress.main.options.archive %>.jpg'],
+                src: ['<%= compress.main.options.archive %>',
+                    '<%= compress.main.options.archive %>.jpg'],
                 dest: '<%= pkg.vle_path %>',
                 filter: 'isFile'
             }
@@ -68,12 +68,11 @@ module.exports = function (grunt) {
                     banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
                 },
                 files: {
-                    'build/css/app.min.css': ['<%= concat.css.dest %>']
+                    'build/css/style.min.css': ['<%= concat.css.dest %>']
                 }
             }
         },
         jshint: {
-            build: ['Gruntfile.js', 'src/js/**/*.js'],
             options: {
                 // options here to override JSHint defaults
                 globals: {
@@ -82,7 +81,10 @@ module.exports = function (grunt) {
                     module: true,
                     document: true
                 }
-            }
+            },
+            gruntfile: ['Gruntfile.js'],
+            beforeconcat: ['<%= concat.js.src %>'],
+            afterconcat: ['<%= concat.js.dest %>']
         },
         open: {
             dev: {
@@ -118,11 +120,11 @@ module.exports = function (grunt) {
                 replacements: [
                     {
                         from: '##title',
-                        to: '<%= pkg.course %>' + ' ' + '<%= pkg.title %>'
+                        to: '<%= pkg.title %>'
                     },
                     {
                         from: 'src=""',
-                        to: 'src="\\\\esaki\\lts-common$\\alex_phillips\\<%= pkg.name %>.zip"'
+                        to: 'src="<%= pkg.vle_sc_path %><%= pkg.name %>.zip"'
                     },
                     {
                         from: 'id=""',
@@ -138,7 +140,7 @@ module.exports = function (grunt) {
                     },
                     {
                         from: 'height=""',
-                        to: 'height="<%= pkg.height %>\"'
+                        to: 'height="<%= pkg.height %>"'
                     }
                 ]
             },
@@ -154,24 +156,27 @@ module.exports = function (grunt) {
             }
         },
         shell: {
+            mk_git_dir: {
+                options: {
+                    execOptions: {
+                        cwd: '//esaki/LTS-Software/git-repos'
+                    }
+                },
+                command: 'mkdir <%= pkg.name %>.git'
+            },
             git_init: {
                 options: {
                     failOnError: false
                 },
-                command: [
-                    'git init',
-                    'git add -A',
-                    'git commit -m \'initial commit\'',
-
-                ].join('&&')
+                command: 'git init'
             },
-            build: {
-                options: {
-                    failOnError: false
-                },
+            git_clone: {
+                command: 'git clone --bare ../<%= pkg.name %> ../<%= pkg.name %>.git'
+            },
+            git_commit: {
                 command: [
                     'git add -A',
-                    'git commit -m \'initial commit\''
+                    'git commit -m \'msg\''
                 ].join('&&')
             }
         },
@@ -181,13 +186,19 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: {
-                    'build/js/<%= pkg.name %>.min.js': ['<%= concat.js.dest %>']
+                    'build/js/app.min.js': ['<%= concat.js.dest %>']
                 }
             }
         },
         watch: {
-            files: ['<%= jshint.files %>'],
-            tasks: ['jshint']
+            js: {
+                files: ['<%= jshint.files %>'],
+                tasks: ['jshint']
+            },
+            css: {
+                files: ['<%= csslint.src %>'],
+                tasks: ['csslint']
+            }
         }
     });
 
@@ -209,7 +220,7 @@ module.exports = function (grunt) {
 
     //Tasks
     grunt.registerTask('default', ['build']);
-    grunt.registerTask('setup', ['replace', 'shell:git_init']);
+    grunt.registerTask('setup', ['replace', 'shell:git_commit']);
     grunt.registerTask('build', ['clean:build', 'jshint', 'csslint', 'concat', 'uglify', 'cssmin', 'copy:build', 'processhtml']);
     grunt.registerTask('release', ['clean:release', 'build', 'compress', 'copy:release']);
 
