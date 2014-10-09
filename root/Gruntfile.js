@@ -7,7 +7,7 @@ module.exports = function (grunt) {
                 src: ['build/**/*']
             },
             release: {
-                src: ["release/**/*"]
+                src: ["release/**/*", '!release/<%= pkg.name %>.zip.jpg', '!release/<%= pkg.name %>.xml']
             }
         },
         concat: {
@@ -36,6 +36,10 @@ module.exports = function (grunt) {
             }
         },
         copy: {
+            xml: {
+                src: '<%= pkg.name %>.xml',
+                dest: 'release/'
+            },
             build: {
                 expand: true,
                 cwd: 'src/',
@@ -84,7 +88,7 @@ module.exports = function (grunt) {
             },
             gruntfile: ['Gruntfile.js'],
             beforeconcat: ['<%= concat.js.src %>'],
-            afterconcat: ['<%= uglify.build.dest %>']
+            afterconcat: ['<%= concat.js.dest %>']
         },
         open: {
             dev: {
@@ -102,8 +106,17 @@ module.exports = function (grunt) {
                 path: 'src/index.html',
                 app: 'Internet Explorer' //Can't find
             },
-            test: {
+            learn2: {
+                path: 'https://learn2.open.ac.uk/mod/oucontent/upload.php'
+            },
+            learn3: {
                 path: 'http://learn3.open.ac.uk/mod/oucontent/upload.php'
+            },
+            commons: {
+                path: '<%= pkg.vle_sc_path %>'
+            },
+            release: {
+                path: 'release'
             }
         },
         processhtml: {
@@ -115,8 +128,8 @@ module.exports = function (grunt) {
         },
         replace: {
             xml: {
-                src: '<%= pkg.name %>.xml',
-                dest: '<%= pkg.name %>.xml',
+                src: 'release/<%= pkg.name %>.xml',
+                dest: 'release/<%= pkg.name %>.xml',
                 replacements: [
                     {
                         from: '##title',
@@ -211,7 +224,7 @@ module.exports = function (grunt) {
     //Tasks
     grunt.registerTask('default', ['build']);
     grunt.registerTask('setup', ['replace', 'shell:git_commit']);
-    grunt.registerTask('build', ['clean:build', 'concat', 'uglify', 'cssmin','copy:build', 'processhtml', 'jshint:afterconcat', 'csslint:afterconcat']);
-    grunt.registerTask('release', ['clean:release', 'build', 'compress', 'copy:release']);
+    grunt.registerTask('build', ['clean:build', 'concat', 'jshint:afterconcat', 'csslint:afterconcat', 'uglify', 'cssmin','copy:build', 'processhtml']);
+    grunt.registerTask('release', ['clean', 'build', 'compress', 'copy:release', 'open:learn3', 'open:release']);
 
 };

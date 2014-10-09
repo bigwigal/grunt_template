@@ -19,4 +19,4 @@ var testLinks = {
 	"lombardia": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579750",
 	"piemonte": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579748",
 	"aosta": "https://learn2.open.ac.uk/mod/oublog/view.php?id=579747"
-}
+};

@@ -27,11 +27,14 @@ git init
 echo "add remote repo"
 git remote add origin "/s/git-repos/"$rdir
 
-echo "set up grunt"
+echo "init grunt"
 grunt-init grunt_template
 
 echo "do npm install now"
 npm install
+
+echo "set up grunt"
+grunt setup
 
 echo "Done."
 #end of file
