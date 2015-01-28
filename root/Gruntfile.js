@@ -205,7 +205,8 @@ module.exports = function (grunt) {
             git_commit: {
                 command: [
                     'git add -A',
-                    'git commit -m "initial commit"'
+                    'git commit -m "initial commit"',
+                    'git push origin master'
                 ].join('&&')
             }
         },
@@ -249,7 +250,7 @@ module.exports = function (grunt) {
 
     //Tasks
     grunt.registerTask('default', ['build']);
-    grunt.registerTask('setup', ['replace', 'bower:install', /*'shell:git_commit'*/]);
+    grunt.registerTask('setup', ['replace', 'bower:install', 'shell:git_commit']);
     grunt.registerTask('build', ['jshint:beforeconcat', 'csslint:beforeconcat', 'clean:build', 'concat', 'uglify', 'cssmin', 'copy:build', 'processhtml', 'replace:xhtml']);
     grunt.registerTask('release', ['clean', 'build', 'compress', 'copy:release', 'open:learn3', 'open:release']);
 

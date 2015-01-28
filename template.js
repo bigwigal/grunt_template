@@ -27,7 +27,6 @@ exports.template = function (grunt, init, done) {
 
         // Empty directories will not be copied, so we need to create them manual
         grunt.file.mkdir(join(init.destpath(), 'build'));
-        /*grunt.file.mkdir(join(init.destpath(), 'release'));*/
         grunt.file.mkdir(join(init.destpath(), 'src/img'));
         grunt.file.mkdir(join(init.destpath(), 'src/img/not_used'));
         grunt.file.mkdir(join(init.destpath(), 'src/js'));
