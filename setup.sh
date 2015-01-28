@@ -22,8 +22,10 @@ git init --bare
 
 echo " "
 cd $cur_dir
+
 echo ">>> Create local repo"
 git init
+
 echo "add remote repo"
 git remote add origin "/s/git-repos/"$rdir
 
@@ -37,6 +39,7 @@ echo "set up grunt"
 grunt setup
 
 echo "Done."
+
 #end of file
 
 

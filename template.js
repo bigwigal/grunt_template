@@ -18,7 +18,7 @@ exports.template = function (grunt, init, done) {
         init.prompt('author_name', 'The Open University'),
         init.prompt('author_email'),
         init.prompt('author_url'),
-        init.prompt('webthumbnail', 'false')
+        init.prompt('webthumbnail', 'y/N')
         //init.prompt('licenses', 'MIT'),
     ], function (err, props) {
 
@@ -27,10 +27,12 @@ exports.template = function (grunt, init, done) {
 
         // Empty directories will not be copied, so we need to create them manual
         grunt.file.mkdir(join(init.destpath(), 'build'));
-        grunt.file.mkdir(join(init.destpath(), 'release'));
+        /*grunt.file.mkdir(join(init.destpath(), 'release'));*/
         grunt.file.mkdir(join(init.destpath(), 'src/img'));
+        grunt.file.mkdir(join(init.destpath(), 'src/img/not_used'));
         grunt.file.mkdir(join(init.destpath(), 'src/js'));
         grunt.file.mkdir(join(init.destpath(), 'src/css'));
+        grunt.file.mkdir(join(init.destpath(), 'src/_sources'));
 
         // Files to copy (and process)
         var files = init.filesToCopy(props);
@@ -54,6 +56,7 @@ exports.template = function (grunt, init, done) {
                 'grunt-contrib-uglify': '^0.5.1',
                 'grunt-contrib-watch': '^0.6.1',
                 'grunt-contrib-cssmin': '^0.10.0',
+                'grunt-bower-task': '^0.4.0',
                 'grunt-git': '^0.2.14',
                 'grunt-open': '^0.2.3',
                 'grunt-processhtml': '^0.3.3',
@@ -61,11 +64,12 @@ exports.template = function (grunt, init, done) {
                 'grunt-text-replace': '^0.3.12'
             };
             pkg.module = props.module;
-            pkg.webthumbnail = props.webthumbnail;
-			if (props.webthumbnail === 'false') {
+			if (props.webthumbnail === 'y/N') {
 				pkg.width = '512';
+                pkg.webthumbnail = false;
 			} else {
-				pkg.width = '880'
+				pkg.width = '880';
+                pkg.webthumbnail = true;
             }
             pkg.height = '820';
             pkg.vle_sc_path = '\\\\esaki\\lts-common$\\alex_phillips\\';

@@ -2,22 +2,20 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        bower: {
+            install: {
+                options: {
+                    install: true,
+                    copy: false
+                }
+            }
+        },
         clean: {
             build: {
                 src: ['build/**/*']
             },
             release: {
-                src: ["release/**/*", '!release/<%= pkg.name %>.zip.jpg', '!release/<%= pkg.name %>.xml']
-            }
-        },
-        concat: {
-            js: {
-                src: ['src/js/**/*.js'],
-                dest: 'src/js/<%= pkg.name %>.js'
-            },
-            css: { // Good idea??
-                src: ['src/css/**/*.css'],
-                dest: 'src/css/<%= pkg.name %>.css'
+                src: ['release/**/*', '!release/<%= pkg.name %>.zip.jpg', '!release/<%= pkg.name %>.xml']
             }
         },
         compress: {
@@ -30,9 +28,19 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         cwd: 'build/',
-                        src: ['**/*']
+                        src: ['**/*', '!tmp/**/*']
                     }
                 ]
+            }
+        },
+        concat: {
+            js: {
+                src: ['src/js/**/*.js', '!src/js/jquery*.js', '!src/js/vleapi*.js'],
+                dest: 'build/tmp/<%= pkg.name %>.js'
+            },
+            css: { // Good idea??
+                src: ['src/css/**/*.css'],
+                dest: 'build/tmp/<%= pkg.name %>.css'
             }
         },
         copy: {
@@ -46,7 +54,12 @@ module.exports = function (grunt) {
                 src: [
                     '**/*',
                     '!css/**/*',
-                    '!js/**/*'
+                    '!js/**/*',
+					'js/vleapi*.js',
+					'js/jquery*.js',
+					'!img/not_used/**/*',
+					'!_sources/**/*',
+					'!index.html'
                 ],
                 dest: 'build/',
                 filter: 'isFile'
@@ -73,11 +86,13 @@ module.exports = function (grunt) {
             },
             build: {
                 src: ['<%= concat.css.dest %>'],
-                dest: 'build/<%= pkg.name %>.min.css'
+                dest: 'build/css/<%= pkg.name %>.min.css'
             }
         },
         jshint: {
             options: {
+				scripturl: true,
+
                 // options here to override JSHint defaults
                 globals: {
                     jQuery: true,
@@ -141,7 +156,7 @@ module.exports = function (grunt) {
                     },
                     {
                         from: 'id=""',
-                        to: 'id="<%= pkg.name %>"'
+                        to: 'id="X_<%= pkg.name %>"'
                     },
                     {
                         from: 'webthumbnail=""',
@@ -174,6 +189,16 @@ module.exports = function (grunt) {
                         to: '<%= pkg.name %>.min.css'
                     }
                 ]
+            },
+			xhtml: {
+                src: 'build/index.xhtml',
+                dest: 'build/index.xhtml',
+                replacements: [
+                    {
+                        from: '.css">',
+                        to: '.css" />'
+                    }
+                ]
             }
         },
         shell: {
@@ -190,7 +215,7 @@ module.exports = function (grunt) {
             },
             build: {
                 src: ['<%= concat.js.dest %>'],
-                dest: 'build/<%= pkg.name %>.min.js'
+                dest: 'build/js/<%= pkg.name %>.min.js'
             }
         },
         watch: {
@@ -215,6 +240,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-bower-task');
 	grunt.loadNpmTasks('grunt-git');
     grunt.loadNpmTasks('grunt-open');
     grunt.loadNpmTasks('grunt-processhtml');
@@ -223,8 +249,8 @@ module.exports = function (grunt) {
 
     //Tasks
     grunt.registerTask('default', ['build']);
-    grunt.registerTask('setup', ['replace', 'shell:git_commit']);
-    grunt.registerTask('build', ['clean:build', 'concat', 'jshint:afterconcat', 'csslint:afterconcat', 'uglify', 'cssmin','copy:build', 'processhtml']);
+    grunt.registerTask('setup', ['replace', 'bower:install', /*'shell:git_commit'*/]);
+    grunt.registerTask('build', ['jshint:beforeconcat', 'csslint:beforeconcat', 'clean:build', 'concat', 'uglify', 'cssmin', 'copy:build', 'processhtml', 'replace:xhtml']);
     grunt.registerTask('release', ['clean', 'build', 'compress', 'copy:release', 'open:learn3', 'open:release']);
 
 };
