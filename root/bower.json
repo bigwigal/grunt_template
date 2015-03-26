@@ -1,6 +1,6 @@
 {
   "name": "test-project",
   "dependencies": {
-    "jquery": ""
+    "jquery": "##jquery_version"
   }
 }

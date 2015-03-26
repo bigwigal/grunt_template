@@ -2,11 +2,19 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        bower: {
-            install: {
+        'bower-install-simple': {
+            options: {
+                color: true,
+                directory: 'bower_components'
+            },
+            'prod': {
                 options: {
-                    install: true,
-                    copy: false
+                    production: true
+                }
+            },
+            'dev': {
+                options: {
+                    production: false
                 }
             }
         },
@@ -28,41 +36,51 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         cwd: 'build/',
-                        src: ['**/*', '!tmp/**/*']
+                        src: ['**/*', '!**/tmp/**']
                     }
                 ]
             }
         },
         concat: {
             js: {
-                src: ['src/js/**/*.js', '!src/js/jquery*.js', '!src/js/vleapi*.js'],
+                src: ['src/js/**/*.js', '!src/js/vendor/**/*.js'],
                 dest: 'build/tmp/<%= pkg.name %>.js'
             },
             css: { // Good idea??
-                src: ['src/css/**/*.css'],
+                src: ['src/css/**/*.css', '!src/css/vendor/**/*.css'],
                 dest: 'build/tmp/<%= pkg.name %>.css'
+            },
+            jquery: {
+                files: {
+                    'src/js/vendor/jquery.min.js': ['bower_components/jquery/dist/jquery.min.js']
+                }
             }
         },
         copy: {
-            xml: {
-                src: '<%= pkg.name %>.xml',
-                dest: 'release/'
-            },
             build: {
                 expand: true,
                 cwd: 'src/',
                 src: [
-                    '**/*',
-                    '!css/**/*',
-                    '!js/**/*',
-					'js/vleapi*.js',
-					'js/jquery*.js',
-					'!img/not_used/**/*',
-					'!_sources/**/*',
-					'!index.html'
+                    //'**/*',
+                    'index.xhtml',
+                    'css/vendor/**/*',
+                    'data/**/*',
+                    'img/**/*',
+                    '!img/not_used/**/*',
+                    'js/vendor/**/*',
+                    'vleapi*.js'
+                    //'!css/**/*',
+                    //'!js/**/*',
+					//'js/jquery*.js',
+					//'!_sources/**/*',
+					//'!index.html'
                 ],
                 dest: 'build/',
                 filter: 'isFile'
+            },
+            html: {
+                src: 'src/index.xhtml',
+                dest: 'src/index.html'
             },
             release: {
                 expand: true,
@@ -92,6 +110,7 @@ module.exports = function (grunt) {
         jshint: {
             options: {
 				scripturl: true,
+				loopfunc: true,
 
                 // options here to override JSHint defaults
                 globals: {
@@ -142,6 +161,16 @@ module.exports = function (grunt) {
             }
         },
         replace: {
+            bower: {
+                src: 'bower.json',
+                dest: 'bower.json',
+                replacements: [
+                    {
+                        from: '##jquery_version',
+                        to: '<%= pkg.jquery_version %>'
+                    }
+                ]
+            },
             xml: {
                 src: 'release/<%= pkg.name %>.xml',
                 dest: 'release/<%= pkg.name %>.xml',
@@ -178,7 +207,7 @@ module.exports = function (grunt) {
                 replacements: [
                     {
                         from: '##title',
-                        to: '<%= pkg.title %>'
+                        to: '<%= pkg.description %>'
                     },
                     {
                         from: 'app.min.js',
@@ -241,17 +270,52 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-bower-task');
-	grunt.loadNpmTasks('grunt-git');
+    grunt.loadNpmTasks("grunt-bower-install-simple");
     grunt.loadNpmTasks('grunt-open');
     grunt.loadNpmTasks('grunt-processhtml');
     grunt.loadNpmTasks('grunt-shell');
     grunt.loadNpmTasks('grunt-text-replace');
 
     //Tasks
-    grunt.registerTask('default', ['build']);
-    grunt.registerTask('setup', ['replace', 'bower:install', 'shell:git_commit']);
-    grunt.registerTask('build', ['jshint:beforeconcat', 'csslint:beforeconcat', 'clean:build', 'concat', 'uglify', 'cssmin', 'copy:build', 'processhtml', 'replace:xhtml']);
-    grunt.registerTask('release', ['clean', 'build', 'compress', 'copy:release', 'open:learn3', 'open:release']);
+    grunt.registerTask('default', [
+        'build'
+    ]);
+    grunt.registerTask('bower', [
+        'bower-install-simple:dev',
+        'concat:jquery'
+    ]);
+    grunt.registerTask('setup', [
+        'replace:bower',
+        'replace:html',
+        'replace:xml',
+        'bower'
+        /*'shell:git_commit'*/
+    ]);
+    grunt.registerTask('html', [
+        'copy:html'
+    ]);
+    grunt.registerTask('build', [
+        'jshint:beforeconcat',
+        'csslint:beforeconcat',
+        'clean:build',
+        'concat',
+        'uglify',
+        'cssmin',
+        'copy:build',
+        'processhtml',
+        'replace:xhtml', //fix for processhtml
+        'html'
+    ]);
+    grunt.registerTask('release', [
+        'build',
+        'clean:release',
+        'compress',
+        'copy:release'
+    ]);
+    grunt.registerTask('upload', [
+        'open:learn3',
+        'open:release'
+    ]);
+
 
 };
