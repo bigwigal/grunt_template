@@ -66,10 +66,10 @@ exports.template = function (grunt, init, done) {
             pkg.module = props.module;
 			if (props.webthumbnail === 'y/N') {
 				pkg.width = '512';
-                pkg.webthumbnail = 'false';
+                pkg.webthumbnail = false;
 			} else {
 				pkg.width = '880';
-                pkg.webthumbnail = 'true';
+                pkg.webthumbnail = true;
             }
             if (props.jquery_version.charAt(0) === '2') {
                 pkg.jquery_version = '>=2.0';

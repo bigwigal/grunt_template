@@ -13,7 +13,7 @@
         <ByLine/>
         <Session>
             <Title/>
-            <MediaContent width="" height="" src="" type="html5" webthumbnail=""/>
+            <MediaContent id="activity1" width="" height="" src="" type="html5" webthumbnail=""/>
         </Session>
     </Unit>
 </Item>

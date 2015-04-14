@@ -241,6 +241,11 @@ module.exports = function (grunt) {
         },
         uglify: {
             options: {
+				preserveComments: false,
+                compress: {
+                    drop_console: true,
+                    pure_funcs: [/*'console.log'*/] // will remove any unwanted vars/funcs
+                },
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
             },
             build: {
@@ -269,7 +274,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-csslint');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-watch');
+    /*grunt.loadNpmTasks('grunt-contrib-watch');*/
     grunt.loadNpmTasks("grunt-bower-install-simple");
     grunt.loadNpmTasks('grunt-open');
     grunt.loadNpmTasks('grunt-processhtml');
@@ -281,7 +286,7 @@ module.exports = function (grunt) {
         'build'
     ]);
     grunt.registerTask('bower', [
-        'bower-install-simple:dev',
+        'bower-install-simple:prod',
         'concat:jquery'
     ]);
     grunt.registerTask('setup', [
